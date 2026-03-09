@@ -1,0 +1,24 @@
+{
+  "strategies": {
+    "smc": {
+      "enabled": true,
+      "bos_threshold": 0.002,
+      "weight": 0.25
+    },
+    "ict": {
+      "enabled": true,
+      "weight": 0.25
+    },
+    "price_action": {
+      "enabled": true,
+      "weight": 0.25
+    },
+    "indicators": {
+      "enabled": true,
+      "weight": 0.25
+    }
+  },
+  "consensus": {
+    "min_agreement": 0.5
+  }
+}
