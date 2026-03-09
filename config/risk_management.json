@@ -1,0 +1,15 @@
+{
+  "account": {
+    "balance": 10000,
+    "leverage": 1
+  },
+  "risk_management": {
+    "risk_per_trade": 2.0,
+    "max_daily_loss": 50,
+    "max_concurrent_trades": 3
+  },
+  "stop_loss": {
+    "use_trailing_stop": true,
+    "trailing_stop_pips": 10
+  }
+}
