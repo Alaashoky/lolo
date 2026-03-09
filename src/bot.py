@@ -25,6 +25,7 @@ from src.trade_management.risk_manager import RiskManager
 from src.data.market_data import MarketData
 from src.data.database import Database
 from src.utils.logger import setup_logger, log_trade_event
+from src.ai.prediction import PredictionEngine
 
 logger = logging.getLogger("forex_bot")
 
@@ -86,6 +87,19 @@ class ForexBot:
         data_cfg = self._settings.get("data", {})
         self.market_data = MarketData(data_cfg)
         self.db = Database()
+
+        # AI Ensemble
+        ai_cfg = self._settings.get("ai", {})
+        self._ai_enabled: bool = ai_cfg.get("enabled", False)
+        self._ai_engine: Optional[PredictionEngine] = None
+        self._ai_ensemble_weight: float = ai_cfg.get("ensemble_weight", 0.4)
+        if self._ai_enabled:
+            try:
+                self._ai_engine = PredictionEngine(self._settings)
+                logger.info("AI Ensemble initialised (ensemble_weight=%.2f).", self._ai_ensemble_weight)
+            except Exception as exc:
+                logger.warning("AI Ensemble could not be initialised: %s", exc)
+                self._ai_enabled = False
 
         self._running = False
         logger.info("Bot initialised. Pairs: %s", ", ".join(self.pairs))
@@ -177,7 +191,10 @@ class ForexBot:
 
     def _consensus(self, pair: str, df) -> tuple[str, float]:
         """
-        Run all enabled strategies and aggregate their signals.
+        Run all enabled strategies and AI ensemble, then aggregate signals.
+
+        The AI ensemble prediction is blended with the traditional strategy
+        consensus using the configured ``ensemble_weight``.
 
         Returns:
             Tuple of (signal, confidence) where signal is 'BUY', 'SELL',
@@ -186,11 +203,14 @@ class ForexBot:
         strat_cfg = self._strategies_cfg.get("strategies", {})
         votes: dict[str, float] = {"BUY": 0.0, "SELL": 0.0}
 
+        # Traditional strategies
+        trad_weight = 1.0 - self._ai_ensemble_weight if self._ai_enabled else 1.0
+
         for name, strategy in self._strategies.items():
             cfg = strat_cfg.get(name, {})
             if not cfg.get("enabled", True):
                 continue
-            weight = cfg.get("weight", 0.25)
+            weight = cfg.get("weight", 0.25) * trad_weight
             try:
                 result = strategy.analyze(df)
             except Exception as exc:
@@ -201,6 +221,16 @@ class ForexBot:
             conf = result.get("confidence", 0.0)
             if sig in votes:
                 votes[sig] += weight * conf
+
+        # AI ensemble contribution
+        if self._ai_enabled and self._ai_engine is not None:
+            try:
+                ai_signal, ai_conf = self._ai_engine.predict(df, pair=pair)
+                if ai_signal in votes:
+                    votes[ai_signal] += self._ai_ensemble_weight * ai_conf
+                    logger.debug("AI signal for %s: %s (%.3f)", pair, ai_signal, ai_conf)
+            except Exception as exc:
+                logger.warning("AI ensemble error for %s: %s", pair, exc)
 
         total = sum(votes.values())
         if total == 0:
