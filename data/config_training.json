@@ -1,0 +1,64 @@
+{
+  "training": {
+    "pairs": ["EURUSD", "GBPUSD", "USDJPY", "AUDUSD", "NZDUSD", "XAUUSD"],
+    "years": 5,
+    "timeframe": "H1",
+    "train_ratio": 0.7,
+    "val_ratio": 0.15,
+    "test_ratio": 0.15,
+    "data_sources": {
+      "forex": "yfinance",
+      "crypto": "ccxt",
+      "commodities": "yfinance"
+    }
+  },
+  "backtesting": {
+    "initial_balance": 10000,
+    "risk_per_trade": 2.0,
+    "max_concurrent_trades": 3,
+    "slippage_pips": 3,
+    "spread_pips": 2,
+    "commission_percent": 0.01
+  },
+  "models": {
+    "lstm": {
+      "epochs": 50,
+      "batch_size": 32,
+      "lookback": 60
+    },
+    "transformer": {
+      "epochs": 50,
+      "batch_size": 32,
+      "d_model": 64,
+      "num_heads": 4,
+      "num_layers": 2
+    },
+    "xgboost": {
+      "n_estimators": 200,
+      "max_depth": 7,
+      "learning_rate": 0.1
+    },
+    "random_forest": {
+      "n_estimators": 200,
+      "max_depth": 15
+    },
+    "cnn": {
+      "epochs": 50,
+      "batch_size": 32,
+      "filters": [32, 64],
+      "kernel_size": 3
+    },
+    "prophet": {
+      "changepoint_prior_scale": 0.05,
+      "seasonality_prior_scale": 10,
+      "forecast_horizon": 5
+    },
+    "sentiment": {
+      "lookback_hours": 24
+    },
+    "anomaly": {
+      "contamination": 0.05,
+      "n_estimators": 100
+    }
+  }
+}
