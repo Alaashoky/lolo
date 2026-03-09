@@ -126,7 +126,7 @@ def _generate_signals(df: pd.DataFrame, ensemble: AIEnsemble) -> pd.Series:
     signals = []
 
     # Try AI ensemble first
-    lookback = ensemble._lookback
+    lookback = ensemble.lookback
     data_processor = ensemble.data_processor
     feature_engineer = ensemble.feature_engineer
 
@@ -146,7 +146,7 @@ def _generate_signals(df: pd.DataFrame, ensemble: AIEnsemble) -> pd.Series:
             window = df.iloc[i - lookback : i + 1]
             try:
                 signal, confidence, _ = ensemble.predict(window)
-                signals.append(signal if confidence >= ensemble._confidence_threshold else "HOLD")
+                signals.append(signal if confidence >= ensemble.confidence_threshold else "HOLD")
             except Exception:
                 signals.append("HOLD")
     else:

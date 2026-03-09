@@ -19,7 +19,7 @@ from __future__ import annotations
 import json
 import logging
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, List, Optional
 
 logger = logging.getLogger("forex_bot.backtesting.report_generator")
@@ -228,8 +228,8 @@ class ReportGenerator:
 
         html = template.render(
             pair=pair,
-            generated_at=datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
-            year=datetime.utcnow().year,
+            generated_at=datetime.now(tz=timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+            year=datetime.now(tz=timezone.utc).year,
             stats=stats,
             trades=trades,
             risk_rows=risk_rows,

@@ -245,3 +245,13 @@ class AIEnsemble:
     @property
     def data_processor(self) -> DataProcessor:
         return self._processor
+
+    @property
+    def lookback(self) -> int:
+        """Lookback window length used for sequence models."""
+        return self._lookback
+
+    @property
+    def confidence_threshold(self) -> float:
+        """Minimum confidence required to emit a BUY/SELL signal."""
+        return self._confidence_threshold
