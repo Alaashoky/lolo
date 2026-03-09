@@ -9,3 +9,14 @@ __pycache__/
 .DS_Store
 *.log
 *.sqlite3
+
+# Backtesting: generated data & artefacts (keep directory structure via .gitkeep)
+data/historical/
+results/models/*.pkl
+results/models/*.h5
+results/models/*.tf
+results/charts/*.png
+results/backtest_results.json
+results/performance_report.html
+results/model_evaluation.json
+results/training_summary.json

@@ -21,3 +21,6 @@ torch>=2.0.0
 prophet>=1.1.5
 optuna>=3.0.0
 plotly>=5.0.0
+# Backtesting & reporting dependencies
+jinja2>=3.0.0
+openpyxl>=3.0.0
